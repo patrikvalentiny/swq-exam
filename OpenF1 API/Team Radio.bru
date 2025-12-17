@@ -1,0 +1,59 @@
+meta {
+  name: Team Radio
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{baseUrl}}/team_radio
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~session_key: 
+  ~meeting_key: 
+  ~driver_number: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/team_radio
+    method: GET
+    mode: none
+    params:query: {
+      ~session_key: 
+      ~meeting_key: 
+      ~driver_number: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "date": "",
+            "driver_number": 0,
+            "meeting_key": 0,
+            "recording_url": "",
+            "session_key": 0
+          }
+        ]
+      '''
+    }
+  }
+}

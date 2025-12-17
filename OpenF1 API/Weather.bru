@@ -1,0 +1,64 @@
+meta {
+  name: Weather
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/weather
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~session_key: 
+  ~meeting_key: 
+  ~date: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/weather
+    method: GET
+    mode: none
+    params:query: {
+      ~session_key: 
+      ~meeting_key: 
+      ~date: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "air_temperature": "",
+            "date": "",
+            "humidity": "",
+            "meeting_key": 0,
+            "pressure": "",
+            "rainfall": 0,
+            "session_key": 0,
+            "track_temperature": "",
+            "wind_direction": 0,
+            "wind_speed": ""
+          }
+        ]
+      '''
+    }
+  }
+}

@@ -1,0 +1,63 @@
+meta {
+  name: Car Location
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/location
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~session_key: 
+  ~meeting_key: 
+  ~driver_number: 
+  ~date: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/location
+    method: GET
+    mode: none
+    params:query: {
+      ~session_key: 
+      ~meeting_key: 
+      ~driver_number: 
+      ~date: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "date": "",
+            "driver_number": 0,
+            "meeting_key": 0,
+            "session_key": 0,
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        ]
+      '''
+    }
+  }
+}

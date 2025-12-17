@@ -1,0 +1,70 @@
+meta {
+  name: Session Information
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/sessions?meeting_key={{meeting_key}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  meeting_key: {{meeting_key}}
+  ~session_key: {{session_key}}
+  ~year: 
+  ~country_code: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/sessions
+    method: GET
+    mode: none
+    params:query: {
+      ~meeting_key: 
+      ~session_key: 
+      ~year: 
+      ~country_code: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "circuit_key": 0,
+            "circuit_short_name": "",
+            "country_code": "",
+            "country_key": 0,
+            "country_name": "",
+            "date_end": "",
+            "date_start": "",
+            "gmt_offset": "",
+            "location": "",
+            "meeting_key": 0,
+            "session_key": 0,
+            "session_name": "",
+            "session_type": "",
+            "year": 0
+          }
+        ]
+      '''
+    }
+  }
+}

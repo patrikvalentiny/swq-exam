@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "OpenF1 API Tags",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

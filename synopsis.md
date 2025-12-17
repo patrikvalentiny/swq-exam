@@ -2,6 +2,9 @@
 
 When working with APIs, having the right Integrated Development Environment (IDE) can significantly enhance your productivity and ease of testing. Below is a comparison of three popular IDEs (Postman, Insomnia, and Bruno) that are well-suited for exploring and testing APIs.
 
+The comparison will be done by testing openF1 API (https://openf1.org/) on each of the IDEs.
+
+## Feature Comparison Overview
 | Feature                     | Postman                          | Insomnia                        | Bruno                           |
 |-----------------------------|----------------------------------|---------------------------------|---------------------------------|
 | Pricing                     | Free tier available; paid plans | Open-Source, paid Plans  | Open-Source, paid Plans           |

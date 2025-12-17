@@ -1,0 +1,60 @@
+meta {
+  name: Overtakes (Beta)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/overtakes
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~session_key: 
+  ~meeting_key: 
+  ~driver_number: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/overtakes
+    method: GET
+    mode: none
+    params:query: {
+      ~session_key: 
+      ~meeting_key: 
+      ~driver_number: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "driver_number": 0,
+            "overtaken_driver_number": 0,
+            "lap_number": 0,
+            "date": "",
+            "meeting_key": 0,
+            "session_key": 0
+          }
+        ]
+      '''
+    }
+  }
+}

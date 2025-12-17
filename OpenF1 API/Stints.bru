@@ -1,0 +1,62 @@
+meta {
+  name: Stints
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/stints
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~session_key: 
+  ~meeting_key: 
+  ~driver_number: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/stints
+    method: GET
+    mode: none
+    params:query: {
+      ~session_key: 
+      ~meeting_key: 
+      ~driver_number: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "compound": "",
+            "driver_number": 0,
+            "lap_start": 0,
+            "lap_end": 0,
+            "stint_number": 0,
+            "tyre_age_at_start": 0,
+            "meeting_key": 0,
+            "session_key": 0
+          }
+        ]
+      '''
+    }
+  }
+}

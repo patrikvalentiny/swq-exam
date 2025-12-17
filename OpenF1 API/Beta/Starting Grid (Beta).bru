@@ -1,0 +1,56 @@
+meta {
+  name: Starting Grid (Beta)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/starting_grid
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~session_key: 
+  ~meeting_key: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/starting_grid
+    method: GET
+    mode: none
+    params:query: {
+      ~session_key: 
+      ~meeting_key: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "driver_number": 0,
+            "grid_position": 0,
+            "meeting_key": 0,
+            "session_key": 0
+          }
+        ]
+      '''
+    }
+  }
+}

@@ -1,0 +1,803 @@
+openapi: 3.0.3
+info:
+  title: OpenF1 API
+  version: 1.0.0
+  description: |
+    OpenF1 is an open-source API that provides real-time and historical Formula 1 data.
+    
+    **Base URL**: `https://api.openf1.org/v1`
+    
+    **Authentication**:
+    - Historical data is free and requires no authentication.
+    - Real-time data requires a paid account (not covered in this public spec).
+    
+    **Key Concepts**:
+    - **Session Key**: Unique identifier for a specific session (e.g., FP1, Qualifying, Race). Use `latest` for the current/latest session.
+    - **Meeting Key**: Unique identifier for a race weekend (meeting). Use `latest` for the current/latest meeting.
+  contact:
+    name: OpenF1 Support
+    url: https://openf1.org/
+servers:
+  - url: https://api.openf1.org/v1
+    description: Primary API Server
+
+paths:
+  /car_data:
+    get:
+      summary: Car Telemetry Data
+      description: |
+        Fetch telemetry data for a specific car, including speed, throttle, brake, RPM, and gear. 
+        Sample rate is approximately 3.7 Hz.
+      operationId: getCarData
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+        - $ref: '#/components/parameters/date_filter'
+        - name: speed
+          in: query
+          description: Filter by speed (e.g., `speed>=315`).
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CarData'
+
+  /drivers:
+    get:
+      summary: Driver Information
+      description: Provides information about drivers participating in a specific session.
+      operationId: getDrivers
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Driver'
+
+  /intervals:
+    get:
+      summary: Interval Data
+      description: |
+        Fetches real-time interval data between drivers and their gap to the race leader. 
+        Available during races only.
+      operationId: getIntervals
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+        - name: interval
+          in: query
+          description: Filter by interval gap (e.g., `interval<0.005`).
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Interval'
+
+  /laps:
+    get:
+      summary: Lap Data
+      description: Provides detailed information about individual laps, including sector times and speeds.
+      operationId: getLaps
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+        - name: lap_number
+          in: query
+          description: Filter by specific lap number.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Lap'
+
+  /location:
+    get:
+      summary: Car Location
+      description: |
+        The approximate location of cars on the circuit (X, Y, Z coordinates).
+        Sample rate is approximately 3.7 Hz. Origin (0,0,0) is arbitrary.
+      operationId: getLocation
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+        - $ref: '#/components/parameters/date_filter'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+
+  /meetings:
+    get:
+      summary: Meeting Information
+      description: |
+        Provides information about meetings (Grand Prix or testing weekends).
+        A meeting usually includes multiple sessions.
+      operationId: getMeetings
+      parameters:
+        - name: year
+          in: query
+          description: Filter by year.
+          schema:
+            type: integer
+            example: 2023
+        - name: country_name
+          in: query
+          description: Filter by country name.
+          schema:
+            type: string
+        - name: circuit_key
+          in: query
+          description: Filter by circuit key.
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/meeting_key'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meeting'
+
+  /overtakes:
+    get:
+      summary: Overtakes (Beta)
+      description: Provides information about overtakes during a session.
+      operationId: getOvertakes
+      tags: [Beta]
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Overtake'
+
+  /pit:
+    get:
+      summary: Pit Stops
+      description: Provides information about cars going through the pit lane.
+      operationId: getPitStops
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+        - name: lap_number
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PitStop'
+
+  /position:
+    get:
+      summary: Position Data
+      description: Provides driver positions throughout a session.
+      operationId: getPositions
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+        - $ref: '#/components/parameters/date_filter'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Position'
+
+  /race_control:
+    get:
+      summary: Race Control
+      description: Provides race control messages (flags, safety car, incidents).
+      operationId: getRaceControl
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - name: flag
+          in: query
+          description: Filter by flag type (e.g., YELLOW, RED, GREEN).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RaceControl'
+
+  /sessions:
+    get:
+      summary: Session Information
+      description: Provides information about distinct periods of track activity (Practice, Qualifying, Race).
+      operationId: getSessions
+      parameters:
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/session_key'
+        - name: year
+          in: query
+          schema:
+            type: integer
+        - name: country_code
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+
+  /session_result:
+    get:
+      summary: Session Result (Beta)
+      description: Provides the final classification/result of a session.
+      operationId: getSessionResult
+      tags: [Beta]
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SessionResult'
+
+  /starting_grid:
+    get:
+      summary: Starting Grid (Beta)
+      description: Provides the starting grid configuration for a session.
+      operationId: getStartingGrid
+      tags: [Beta]
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StartingGrid'
+
+  /stints:
+    get:
+      summary: Stints
+      description: Provides information about individual stints (periods of continuous driving on one set of tires).
+      operationId: getStints
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Stint'
+
+  /team_radio:
+    get:
+      summary: Team Radio
+      description: Collection of radio exchanges between drivers and teams.
+      operationId: getTeamRadio
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/driver_number'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamRadio'
+
+  /weather:
+    get:
+      summary: Weather
+      description: Weather conditions over the track, updated every minute.
+      operationId: getWeather
+      parameters:
+        - $ref: '#/components/parameters/session_key'
+        - $ref: '#/components/parameters/meeting_key'
+        - $ref: '#/components/parameters/date_filter'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Weather'
+
+components:
+  parameters:
+    session_key:
+      name: session_key
+      in: query
+      description: The unique identifier for the session. Use `latest` for the current session.
+      schema:
+        oneOf:
+          - type: integer
+          - type: string
+            enum: [latest]
+    meeting_key:
+      name: meeting_key
+      in: query
+      description: The unique identifier for the meeting. Use `latest` for the current meeting.
+      schema:
+        oneOf:
+          - type: integer
+          - type: string
+            enum: [latest]
+    driver_number:
+      name: driver_number
+      in: query
+      description: The unique number assigned to an F1 driver.
+      schema:
+        type: integer
+    date_filter:
+      name: date
+      in: query
+      description: Filter by date (e.g., `date>2023-09-16T13:00:00` or `date<2023-09-16T14:00:00`).
+      schema:
+        type: string
+        format: date-time
+
+  schemas:
+    CarData:
+      type: object
+      properties:
+        brake:
+          type: integer
+          description: Whether the brake pedal is pressed (100) or not (0).
+        date:
+          type: string
+          format: date-time
+        driver_number:
+          type: integer
+        drs:
+          type: integer
+          description: "DRS status: 0/1=Off, 10/12/14=On, 8=Detected/Eligible."
+        meeting_key:
+          type: integer
+        n_gear:
+          type: integer
+          description: Current gear (0=Neutral/Reverse).
+        rpm:
+          type: integer
+        session_key:
+          type: integer
+        speed:
+          type: integer
+          description: Velocity in km/h.
+        throttle:
+          type: integer
+          description: Percentage of max engine power.
+
+    Driver:
+      type: object
+      properties:
+        broadcast_name:
+          type: string
+        country_code:
+          type: string
+        driver_number:
+          type: integer
+        first_name:
+          type: string
+        full_name:
+          type: string
+        headshot_url:
+          type: string
+          format: uri
+        last_name:
+          type: string
+        meeting_key:
+          type: integer
+        name_acronym:
+          type: string
+        session_key:
+          type: integer
+        team_colour:
+          type: string
+          description: Hex color code.
+        team_name:
+          type: string
+
+    Interval:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        driver_number:
+          type: integer
+        gap_to_leader:
+          type: number
+          format: float
+          description: Gap to leader in seconds (or null if leader).
+        interval:
+          type: number
+          format: float
+          description: Gap to car ahead in seconds.
+        meeting_key:
+          type: integer
+        session_key:
+          type: integer
+
+    Lap:
+      type: object
+      properties:
+        date_start:
+          type: string
+          format: date-time
+        driver_number:
+          type: integer
+        duration_sector_1:
+          type: number
+        duration_sector_2:
+          type: number
+        duration_sector_3:
+          type: number
+        i1_speed:
+          type: integer
+        i2_speed:
+          type: integer
+        is_pit_out_lap:
+          type: boolean
+        lap_duration:
+          type: number
+        lap_number:
+          type: integer
+        meeting_key:
+          type: integer
+        segments_sector_1:
+          type: array
+          items:
+            type: integer
+        segments_sector_2:
+          type: array
+          items:
+            type: integer
+        segments_sector_3:
+          type: array
+          items:
+            type: integer
+        session_key:
+          type: integer
+        st_speed:
+          type: integer
+          description: Speed trap speed.
+
+    Location:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        driver_number:
+          type: integer
+        meeting_key:
+          type: integer
+        session_key:
+          type: integer
+        x:
+          type: integer
+          description: X coordinate (arbitrary origin).
+        y:
+          type: integer
+          description: Y coordinate (arbitrary origin).
+        z:
+          type: integer
+          description: Z coordinate (arbitrary origin).
+
+    Meeting:
+      type: object
+      properties:
+        circuit_key:
+          type: integer
+        circuit_short_name:
+          type: string
+        country_code:
+          type: string
+        country_key:
+          type: integer
+        country_name:
+          type: string
+        date_start:
+          type: string
+          format: date-time
+        gmt_offset:
+          type: string
+        location:
+          type: string
+        meeting_key:
+          type: integer
+        meeting_name:
+          type: string
+        meeting_official_name:
+          type: string
+        year:
+          type: integer
+
+    Overtake:
+      type: object
+      description: Beta endpoint. Structure inferred.
+      properties:
+        driver_number:
+          type: integer
+          description: The driver who overtook.
+        overtaken_driver_number:
+          type: integer
+          description: The driver who was overtaken.
+        lap_number:
+          type: integer
+        date:
+          type: string
+          format: date-time
+        meeting_key:
+          type: integer
+        session_key:
+          type: integer
+
+    PitStop:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        driver_number:
+          type: integer
+        lap_number:
+          type: integer
+        meeting_key:
+          type: integer
+        pit_duration:
+          type: number
+          description: Duration of the pit stop in seconds.
+        session_key:
+          type: integer
+
+    Position:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        driver_number:
+          type: integer
+        meeting_key:
+          type: integer
+        position:
+          type: integer
+          description: Position in the race/session.
+        session_key:
+          type: integer
+
+    RaceControl:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        category:
+          type: string
+        flag:
+          type: string
+          description: e.g., GREEN, YELLOW, DOUBLE YELLOW, RED.
+        lap_number:
+          type: integer
+        message:
+          type: string
+        meeting_key:
+          type: integer
+        sector:
+          type: integer
+        session_key:
+          type: integer
+
+    Session:
+      type: object
+      properties:
+        circuit_key:
+          type: integer
+        circuit_short_name:
+          type: string
+        country_code:
+          type: string
+        country_key:
+          type: integer
+        country_name:
+          type: string
+        date_end:
+          type: string
+          format: date-time
+        date_start:
+          type: string
+          format: date-time
+        gmt_offset:
+          type: string
+        location:
+          type: string
+        meeting_key:
+          type: integer
+        session_key:
+          type: integer
+        session_name:
+          type: string
+          description: e.g., Practice 1, Qualifying, Race.
+        session_type:
+          type: string
+        year:
+          type: integer
+
+    SessionResult:
+      type: object
+      description: Beta endpoint.
+      properties:
+        driver_number:
+          type: integer
+        position:
+          type: integer
+        points:
+          type: number
+        grid_position:
+          type: integer
+        status:
+          type: string
+          description: e.g., Finished, DNF.
+        meeting_key:
+          type: integer
+        session_key:
+          type: integer
+
+    StartingGrid:
+      type: object
+      description: Beta endpoint.
+      properties:
+        driver_number:
+          type: integer
+        grid_position:
+          type: integer
+        meeting_key:
+          type: integer
+        session_key:
+          type: integer
+
+    Stint:
+      type: object
+      properties:
+        compound:
+          type: string
+          description: Tire compound (e.g., SOFT, MEDIUM, HARD).
+        driver_number:
+          type: integer
+        lap_start:
+          type: integer
+        lap_end:
+          type: integer
+        stint_number:
+          type: integer
+        tyre_age_at_start:
+          type: integer
+        meeting_key:
+          type: integer
+        session_key:
+          type: integer
+
+    TeamRadio:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        driver_number:
+          type: integer
+        meeting_key:
+          type: integer
+        recording_url:
+          type: string
+          format: uri
+        session_key:
+          type: integer
+
+    Weather:
+      type: object
+      properties:
+        air_temperature:
+          type: number
+        date:
+          type: string
+          format: date-time
+        humidity:
+          type: number
+        meeting_key:
+          type: integer
+        pressure:
+          type: number
+        rainfall:
+          type: integer
+          description: 0 = No rain, 1 = Rain.
+        session_key:
+          type: integer
+        track_temperature:
+          type: number
+        wind_direction:
+          type: integer
+        wind_speed:
+          type: number

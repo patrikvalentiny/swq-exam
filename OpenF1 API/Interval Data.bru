@@ -1,0 +1,62 @@
+meta {
+  name: Interval Data
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/intervals
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~session_key: 
+  ~meeting_key: 
+  ~driver_number: 
+  ~interval: 
+}
+
+example {
+  name: 200 Response
+  description: Successful response
+  
+  request: {
+    url: {{baseUrl}}/intervals
+    method: GET
+    mode: none
+    params:query: {
+      ~session_key: 
+      ~meeting_key: 
+      ~driver_number: 
+      ~interval: 
+    }
+  }
+  
+  response: {
+    headers: {
+      Content-Type: application/json
+    }
+  
+    status: {
+      code: 200
+      text: OK
+    }
+  
+    body: {
+      type: json
+      content: '''
+        [
+          {
+            "date": "",
+            "driver_number": 0,
+            "gap_to_leader": "",
+            "interval": "",
+            "meeting_key": 0,
+            "session_key": 0
+          }
+        ]
+      '''
+    }
+  }
+}
