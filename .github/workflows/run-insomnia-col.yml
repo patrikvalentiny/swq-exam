@@ -1,0 +1,12 @@
+name: Automated API tests using Inso CLI
+
+on: push
+
+jobs:
+  automated-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: kong/setup-inso@v2
+        with:
+          inso-version: 10.3.1
+      - run: inso run collection wrk_da5c3b -e env_c19213
