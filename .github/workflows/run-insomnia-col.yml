@@ -9,6 +9,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: kong/setup-inso@v2
         with:
-          inso-version: 12.2.0
+          inso-version: 12.1.0
       - run: inso --version
       - run: inso run collection wrk_da5c3b -e env_c19213
