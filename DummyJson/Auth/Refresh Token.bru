@@ -1,0 +1,57 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/auth/refresh
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "refreshToken":"{{refreshToken}}",
+      "expiresInMins":30
+  }
+}
+
+vars:pre-request {
+  myVar: var
+}
+
+assert {
+  res.status: eq 200
+  res.body: isJson
+  res.body.accessToken: isString
+  res.body.refreshToken: isString
+  res.body.accessToken: isNotEmpty
+  res.body.refreshToken: isNotEmpty
+}
+
+script:post-response {
+  const json = res.body;
+  bru.setEnvVar('accessToken', json.accessToken);
+  bru.setEnvVar('refreshToken',json.refreshToken);
+}
+
+tests {
+  const json = res.body
+  test('Status code is 200', function () {
+      expect(res.getStatus()).to.equal(200)
+  })
+  
+  test("Response has access token", function () {
+      expect(json.accessToken).to.not.be.null
+  })
+  
+  test("Response has refresh token", function () {
+      expect(json.refreshToken).to.not.be.null
+  })
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

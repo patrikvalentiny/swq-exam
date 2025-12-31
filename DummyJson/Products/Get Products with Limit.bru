@@ -1,0 +1,30 @@
+meta {
+  name: Get Products with Limit
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/products?limit={{limit}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  limit: {{limit}}
+}
+
+vars:pre-request {
+  limit: 20
+}
+
+assert {
+  res.status: eq 200
+  res.body.products: isArray
+  res.body.products: length {{limit}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

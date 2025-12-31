@@ -1,0 +1,31 @@
+meta {
+  name: Get Single Product
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/products/:id
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: {{id}}
+}
+
+vars:pre-request {
+  id: 1
+}
+
+assert {
+  res.status: eq 200
+  res.body.id: isNumber
+  res.body.title: isString
+  res.body.id: eq {{id}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

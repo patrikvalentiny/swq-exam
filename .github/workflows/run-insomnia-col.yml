@@ -11,5 +11,4 @@ jobs:
         with:
           inso-version: 11.3.0
       - run: inso --version
-      - run: ls -R
-      - run: inso run collection wrk_da5c3b -e env_c19213 --workingDir . --verbose
+      - run: inso run collection wrk_da5c3b -e env_c19213 --workingDir --verbose
