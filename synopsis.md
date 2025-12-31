@@ -69,7 +69,76 @@ Bruno is an open-source API client that focuses on simplicity and performance. I
 
 ### 5.1 CLI Support
 
+All of the tools provide command-line interfaces (CLIs) that allow users to run tests. Postman offers Postman CLI or Newman, Insomnia provides Insomnia CLI, and Bruno has its own Bruno CLI. These CLIs can be integrated into CI/CD pipelines to automate API testing as part of the development workflow.
+
+#### Postman CLI
+
+Postman CLI is used to run Postman collections stored in the cloud by authenticating via an API key and running the predefined collection by it's id. The documentation is comprehensive and it is relatively straightforward to integrate into CI/CD pipelines. However, since Postman collections are stored in a proprietary format, version control and collaboration can be more challenging compared to tools that use plain text files. The CLI only executes collections stored in the Postman cloud, run details are then visible directly in the Postman app.
+
+#### Insomnia CLI
+
+Insomnia CLI seems to be in a more experimental state. It seems the switch from local storage to a cloud-first approach has affected the CLI usability. The documentation is sparse and it is not clear how to integrate it into CI/CD pipelines effectively.
+
+#### Bruno CLI
+
+Bruno CLI allows running Bru files directly from the collection root or by selecting folders or specific requests. It is straightforward to use and integrates well into CI/CD pipelines. Since Bruno stores collections as plain text files, it is easy to version control and manage within a CI/CD context.
+
 ### 5.2 GitHub Actions Integration
+
+#### Postman
+
+Postman CLI is setup in GitHub Actions by installing it via a shell script, logging in using an API key stored in GitHub Secrets, and then running the desired collection by its ID. Below is an example GitHub Actions workflow for running Postman collections:
+
+```yaml
+name: Automated API tests using Postman CLI
+
+on: push
+
+jobs:
+  automated-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      - name: Login to Postman CLI
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+      - name: Run API tests
+        run: |
+          postman collection run "29167626-4746e42d-43a8-40d6-9d8a-d24b44531c54"
+```
+
+#### Insomnia
+
+#### Bruno
+
+Bruno CLI can be integrated into GitHub Actions by installing Node.js, installing Bruno CLI via npm, and then running the tests from the desired collection directory. Below is an example GitHub Actions workflow for running Bruno tests:
+
+```yaml
+name: Bruno API Tests
+
+on: push
+
+jobs:
+  api-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install Bruno CLI
+      run: npm install -g @usebruno/cli
+    
+    - name: Run API Tests
+      run: cd DummyJson && bru run
+```
 
 ## 6. Conclusion and Recommendations
 
