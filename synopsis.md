@@ -11,29 +11,31 @@
 
 ## 2. Quality Metrics
 
+I have chosen the metrics below to compare how each IDE performs in key areas relevant to developers working with and testing APIs.
+
 ### 2.1. Performance
 
-Startup Time, Request Execution Speed, Resource Usage
+Performance mainly covers tool responsiveness and resource use. The observation is based on the user experience instead of precise benchmarks. The observations include startup time, the time to run individual requests, and how the tool behaves under usual developer tasks.
 
 ### 2.2. Maintainability
 
-Environment Setup, Variables and Templates, Request Organization, Export/Import Options
+Maintainability concerns how easily projects can be organised, shared and updated. Useful features are straightforward environment setup, reusable variables or templates, clear collection structure, and reliable import/export or versioning options.
 
 ### 2.3. Security
 
-Secret Management
+Security focuses on protecting credentials and sensitive data. Evaluating secure storage for secrets and support for common authentication methods.
 
 ### 2.4. Testing Capabilities
 
-Test Suites, Assertions, Automated Testing, Reporting
+Testing capabilities include assertion support, testing framework, clear reporting, test collection running and scheduled tests. Tools should enable repeatable validation with readable and actionable results.
 
 ### 2.5. Usability
 
-User Interface, Learning Curve, Documentation Quality, Plugins, Fake Data Generation
+Usability addresses how quickly a user can perform common tasks. Evaluating interfaces, sensible defaults, concise documentation, and features that aid rapid prototyping such as mock data generation or templates.
 
 ### 2.6. Additional Features
 
-Mock Servers, Collaboration Tools, AI Assistance, MCP/Chatbot Integration
+Additional features cover the inclusion of extras over API request and testing. For example mock servers, collaboration tools, automation hooks, and helpful integrations—can boost the speed of development.
 
 ## 3. IDEs Overview
 
