@@ -9,6 +9,12 @@
 
 ## 1. Introduction
 
+APIs are a fundamental component of modern software development, making the choice of an Integrated Development Environment (IDE) for exploring, debugging, and testing them essential. While **Postman** has long been the industry standard, its evolution into a complex platform with mandatory cloud synchronization has raised concerns regarding performance and data privacy.
+
+These challenges have highlighted alternatives such as **Insomnia**, a well-established competitor now owned by Kong, and **Bruno**, a newer, open-source, local-first tool. Developers must now select a tool that balances features, performance, security, and version control integration.
+
+This report compares Postman, Insomnia, and Bruno. The evaluation uses the **DummyJson API** to implement a standardized set of requests, authentication flows, and automated tests. The study assesses each tool based on performance, maintainability, security, and CI/CD integration capabilities.
+
 ## 2. Quality Metrics
 
 I have chosen the metrics below to compare how each IDE performs in key areas relevant to developers working with and testing APIs.
@@ -56,7 +62,7 @@ Bruno is the most lightweight of the three tools, leading to fast startup times 
 ### 4.2. Maintainability
 
 All three tools offer good maintainability features. Postman provides robust environment management and variable support, but its proprietary format can complicate version control. Insomnia offers similar features with better local storage options. Bruno's use of plain text files for collections makes it the most maintainable in terms of version control and collaboration through Git.
-Variable management and environment setup are straightforward in all three tools. With option to define global, environment, and collection-specific variables. Bruno also supports variables defined directly in the request which can be useful for testing. 
+Variable management and environment setup are straightforward in all three tools. With option to define global, environment, and collection-specific variables. Bruno also supports variables defined directly in the request which can be useful for testing.
 All three tools support dynamic variable setting in order to allow **request chaining**.
 Exporting and importing collections is straightforward in all three tools, Insomnia and Bruno can also import Postman collections, making migration easier.
 
@@ -67,7 +73,11 @@ Sharing collections is easiest with Postman and Insomnia due to its cloud-based 
 
 ### 4.4. Testing Capabilities
 
+All three tools provide robust testing capabilities. With recent updates all tools are able to write tests with Chai assertion library syntax. In Postman and Insomnia tests are written as a part of post-response scripts along with other scripting capabilities. Bruno separates tests into their own section, which can help with organization and readability. Bruno also provides the ability to create assertions directly in the request section without the need for scripting, making it more accessible for users unfamiliar with JavaScript. Overall I found Bruno's testing capabilities to be the most user-friendly and flexible.
+
 ### 4.5. Additional Features
+
+Postman offers the most additional features, including mock servers, reporting, scheduled and performance testing. Recent updates have also focused on AI use cases with features such as MCP servers and flows for creating automation workflows. Insomnia provides a good balance of features  with a focus on usability (including mock servers and MCP clients), and extensibility through community plugins. Bruno is more focused on core API testing functionality, with fewer additional features but a strong emphasis on performance and simplicity.
 
 ## 5. CI/CD Integration
 
