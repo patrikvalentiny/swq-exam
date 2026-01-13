@@ -1,17 +1,17 @@
-<!-- <div style="text-align: center; padding-top: 300px;"> -->
+<div style="text-align: center; padding-top: 300px;">
 
 # Comparison of IDEs For Exploring and Testing APIs
 
 **Student:** Patrik Valentiny  
 
-<!-- </div> -->
-<!-- <div style="page-break-after: always;"></div> -->
+</div>
+<div style="page-break-after: always;"></div>
 
 ## 1. Introduction
 
 APIs are a fundamental component of modern software development, making the choice of an Integrated Development Environment (IDE) for exploring, debugging, and testing them essential. While **Postman** has long been the industry standard, its evolution into a complex platform with mandatory cloud synchronization has raised concerns regarding performance and data privacy.
 
-These challenges have highlighted alternatives such as **Insomnia**, a well-established competitor now owned by Kong, and **Bruno**, a newer, open-source, local-first tool. Developers must now select a tool that balances features, performance, security, and version control integration.
+These challenges have highlighted alternatives such as **Insomnia**, a well-established competitor now owned by Kong, and **Bruno**, a newer, open-source, local-first tool. Developers must now select a tool that balances features, performance and security.
 
 This report compares Postman, Insomnia, and Bruno. The evaluation uses the **DummyJson API** to implement a standardized set of requests, authentication flows, and automated tests. The study assesses each tool based on performance, maintainability, security, and CI/CD integration capabilities.
 
@@ -69,7 +69,7 @@ Exporting and importing collections is straightforward in all three tools, Insom
 ### 4.3. Security
 
 Variables and secrets are stored securely in all three tools. Postman and Insomnia offer encrypted storage for sensitive data, while Bruno's local storage approach ensures that data never leaves the user's device. All three tools support common authentication methods such as OAuth, API keys, and basic auth.
-Sharing collections is easiest with Postman and Insomnia due to its cloud-based nature, Postman allows to choose what variables are stored on the cloud and which are local-only. Bruno requires manual sharing of files or using version control systems. Bruno does share variables marked as "private" when saving files.
+Sharing collections is easiest with Postman and Insomnia due to its cloud-based nature, Postman allows to choose what variables are stored on the cloud and which are local-only. Bruno requires manual sharing of files or using version control systems. Bruno does not share variables marked as "private" when saving files.
 
 ### 4.4. Testing Capabilities
 
@@ -77,7 +77,7 @@ All three tools provide robust testing capabilities. With recent updates all too
 
 ### 4.5. Additional Features
 
-Postman offers the most additional features, including mock servers, reporting, scheduled and performance testing. Recent updates have also focused on AI use cases with features such as MCP servers and flows for creating automation workflows. Insomnia provides a good balance of features  with a focus on usability (including mock servers and MCP clients), and extensibility through community plugins. Bruno is more focused on core API testing functionality, with fewer additional features but a strong emphasis on performance and simplicity.
+Postman offers the most additional features, including mock servers, reporting, scheduled and performance testing. Recent updates have also focused on AI use cases with features such as MCP servers and flows for creating automation workflows. Insomnia provides a good balance of features  with a focus on usability (including mock servers and MCP clients), and extensibility through community plugins. Both Postman and Insomnia also include API specification document support via OpenAPI files. Bruno is more focused on core API testing functionality, with fewer additional features but a strong emphasis on performance and simplicity.
 
 ## 5. CI/CD Integration
 
@@ -175,6 +175,18 @@ jobs:
 
 ## 6. Conclusion and Recommendations
 
+My comparison highlights distinct trade-offs between the three IDEs.
+
+**Postman** remains the industry heavyweight, offering the biggest feature set that suits enterprise teams needing extensive collaboration tools, mock servers, and cloud synchronization. However, this comes at the cost of performance and forced cloud dependency.
+
+**Insomnia** occupies a middle ground but has recently shifted closer to Postman's model. While it remains a capable tool, its move towards cloud-first features and the experimental state of its CLI integration make it less attractive for teams seeking stability and simplicity.
+
+**Bruno** stands out as a robust, developer-centric alternative. Its local-first architecture, plain-text storage, and seamless Git integration address the major pain points of proprietary formats. While it lacks some of the peripheral features of Postman, it excels in core API testing and automation tasks.
+
+### Recommendation
+
+For teams that require a comprehensive platform with built-in mocking and documentation hosting, **Postman** is still the go-to choice. However, for developers and teams prioritizing performance, data privacy, and a clean integration with version control systems, **Bruno** is the superior option. Its lightweight nature and "infrastructure-as-code" approach to collection management make it particularly well-suited for modern CI/CD workflows.
+
 ## 7. References
 
 1. **Postman Learning Center**
@@ -189,3 +201,124 @@ jobs:
    [https://github.com/Kong/insomnia](https://github.com/Kong/insomnia)
 6. **Bruno GitHub Repository**
     [https://github.com/usebruno/bruno](https://github.com/usebruno/bruno)
+  
+## 8. Appendix
+
+### 8.1. Sample Requests and Tests
+
+#### GET Request Example
+
+```javascript
+GET {{base_url}}/products/1
+```
+
+**Tests:**
+
+```javascript
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+pm.test("Response has correct product title", function () {
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.title).to.eql("iPhone 9");
+});
+```
+
+### 8.2. Environment Variables Example
+
+```javascript
+{
+    "base_url": "https://dummyjson.com",
+}
+```
+
+### 8.3. Request Chaining Example
+
+```javascript
+// First Request: Login
+POST {{base_url}}/auth/login
+{
+  "username": "emilys",
+  "password": "emilyspass",
+  "expiresInMins": 30
+}
+// Tests
+pm.test("Login successful", function () {
+    pm.response.to.have.status(200);
+    var jsonData = pm.response.json();
+    pm.environment.set("authToken", jsonData.token);
+});
+
+// Second Request: Get User Details
+GET {{base_url}}/auth/me
+// Headers
+Authorization: Bearer {{authToken}}
+// Tests
+pm.test("User details retrieved", function () {
+    pm.response.to.have.status(200);
+    var jsonData = pm.response.json();
+    pm.expect(jsonData.username).to.eql("kminchelle");
+});
+```
+
+### 8.4. Bru File Example
+
+```groovy
+meta {
+  name: Refresh Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/auth/refresh
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "refreshToken":"{{refreshToken}}",
+      "expiresInMins":30
+  }
+}
+
+vars:pre-request {
+  myVar: var
+}
+
+assert {
+  res.status: eq 200
+  res.body: isJson
+  res.body.accessToken: isString
+  res.body.refreshToken: isString
+  res.body.accessToken: isNotEmpty
+  res.body.refreshToken: isNotEmpty
+}
+
+script:post-response {
+  const json = res.body;
+  bru.setEnvVar('accessToken', json.accessToken);
+  bru.setEnvVar('refreshToken',json.refreshToken);
+}
+
+tests {
+  const json = res.body
+  test('Status code is 200', function () {
+      expect(res.getStatus()).to.equal(200)
+  })
+  
+  test("Response has access token", function () {
+      expect(json.accessToken).to.not.be.null
+  })
+  
+  test("Response has refresh token", function () {
+      expect(json.refreshToken).to.not.be.null
+  })
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+```
