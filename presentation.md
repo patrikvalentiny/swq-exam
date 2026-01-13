@@ -40,39 +40,6 @@ Evaluate and compare Integrated Development Environments (IDEs) for API testing.
 
 ---
 
-## Context: Agile Testing
-
-### How these tools map to Agile Testing Quadrants
-
-- **Q1 (Tech-facing/Team-support):** Automated integration tests via API calls.
-- **Q2 (Business-facing/Team-support):** Functional API tests.
-- **Q4 (Tech-facing/Product-critique):** Performance and security checks.
-
----
-
-## Test techniques used in API Testing
-
-### Test Design Techniques (White-Box)
-
-- **Integration Tests:** Validate the whole system via API endpoints.
-- **Data-Driven Tests:** Using test data to validate API responses.
-  
-### Test Design Techniques (Black-Box)
-
-- **Equivalence Class Testing:** Test various input categories (e.g., valid/invalid IDs).
-- **Boundary Value Analysis:** Test API limits (e.g., limit, offset).
-
----
-
-## Verification vs. Validation
-
-- **Verification ("Building it right"):**
-  - Automated tests confirm that specifications are met.
-- **Validation ("Building the right product"):**
-  - Manual exploration (Q3) within the IDE allows developers to "feel" the data.
-
----
-
 ## Tool comparison methodology
 
 The comparison evaluates the tools across five key dimensions:
@@ -81,49 +48,113 @@ The comparison evaluates the tools across five key dimensions:
 2. **Maintainability:** Organisation, environment setup, and Git/versioning support.
 3. **Security:** Local vs. Cloud storage of credentials and environment variables.
 4. **Testing Capabilities:** Assertions, scripting framework, and reporting.
-5. **Extra Features:** Mock servers, collaboration tools, and automation capabilities.
+5. **Extra Features:** Quality of Life Enhancements.
 
 ---
 
 ## Performance
 
-- **Postman:** Notably slow startup and UI responsiveness.
-- **Insomnia:** Moderate performance, but can lag with large collections.
-- **Bruno:** Fast startup and snappy UI, optimized for local use.
+*Fast development and feedback loops are essential for Agile development.*
+
+- **Bruno:** Instant startup and local file storage allow rapid iteration.
+- **Insomnia:** Cloud sync introduces latency, but generally responsive.
+- **Postman:** Heavy resource usage and slow startup can impede rapid iteration.
 
 ---
 
 ## Maintainability
 
-- **Postman:** Uses proprietary format; possible to export to JSON.
-- **Insomnia:** Supports JSON/YAML exports; has a plugin ecosystem.
-- **Bruno:** Git-native; collections stored as code (`.bru`), ideal for CI/CD.
+*Enable "Tests as Code" (Q1) to ensure reproducible and versioned suites.*
+
+- **Version Control:** **Bruno** uses plain text collections for superior Git integration, while **Postman's** cloud sync complicates versioning.
+- **Environment Management:** All tools offer robust environment variables; **Bruno** uniquely adds request-level variables for deeper control.
+- **Workflow & Migration:** All support dynamic chaining for complex **integration scenarios**, and both **Insomnia** and **Bruno** import Postman collections easily.
 
 ---
 
 ## Security
 
-- **Postman:** Cloud-first; sensitive data are stored on Postman servers if user opts in.
-- **Insomnia:** Recently shifted to cloud-first; local storage available but less emphasized.
-- **Bruno:** Offline-only; all data stored locally, ensuring maximum privacy. (Git integration poses a risk if not managed properly.)
-  
+*Protecting test data and credentials is necessary in order to allow safe testing of production systems.*
+
+- **Bruno:** Offline-first design ensures sensitive production credentials never leave the machine without explicit user action.
+- **Postman/Insomnia:** Cloud synchronization risks accidental exposure of secrets.
+
 ---
 
 ## Testing Capabilities
 
-All three tools use JavaScript with Chai assertions for scripting post-request tests.
+*Automated assertions drive Verification ("Building it right").*
 
-- **Postman:** Includes a rich set of built-in assertions and reporting features.
-- **Insomnia:** Good scripting support; reporting is basic.
-- **Bruno:** Separate tab for tests; supports no-code assertions. Reporting is also basic.
+- **Assertions:** All three tools support the standard **Chai** library syntax.
+- **Organization:**
+  - **Bruno:** Separates tests from scripts for better readability and supports **no-code assertions** (accessible Q2 testing).
+  - **Postman/Insomnia:** Tests are mixed within post-response scripts.
+- **Performance Testing:** Only **Postman** offers built-in load testing suite.
+
+---
+
+## Example: Writing Assertions
+
+```js
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+pm.test("Response time is less than 200ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(200);
+});
+```
+
+![Bruno Assertions](image.png)
 
 ---
 
 ## Extra Features
 
-- **Postman:** Extensive features including Mock Servers, AI assistance, and team collaboration.
-- **Insomnia:** Plugin ecosystem, design-focused features.
-- **Bruno:** Developer-centric features; lacks cloud collaboration but excels in local development.
+*Advanced features like mock servers enable Shift-Left testing, allowing testing to start before implementation finishes.*
+
+- **Postman:** The most feature-rich
+  - Mock Servers for simulating API responses.
+  - AI-assisted test generation and code snippets.
+  - Integrated collaboration tools for team environments.
+- **Insomnia:** Strong plugin ecosystem for customization. Built-in design tools for API schema creation.
+- **Bruno:** Minimal features, focusing on speed and privacy.
+
+---
+
+## CI/CD 
+
+*Continuous Integration enables automated API tests to run on every code change, ensuring early detection of issues.*
+
+- **Bruno:** Git-native approach allows seamless integration with existing CI/CD pipelines.
+- **Postman:** Provides CI/CD integration via Postman CLI, but relies on cloud services.
+- **Insomnia:** Experimental CI/CD tools, less stable.
+
+---
+
+```yaml
+steps:
+  - uses: actions/checkout@v4
+  - name: Install Postman CLI
+    run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+  - name: Login to Postman CLI
+    run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+  - name: Run API tests
+    run: postman collection run "29167626-4746e42d-43a8-40d6-9d8a-d24b44531c54"
+```
+
+```yaml
+steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install Bruno CLI
+      run: npm install -g @usebruno/cli
+    
+    - name: Run API Tests
+      run: cd DummyJson && bru run 
+```
 
 ---
 
@@ -131,7 +162,7 @@ All three tools use JavaScript with Chai assertions for scripting post-request t
 
 ### Postman (The Enterprise Suite)
 
-- **Strengths:** Rich feature set, Mock Servers, AI assistance.
+- **Strengths:** Industry standard, Rich feature set, Mock Servers, AI assistance.
 - **Weaknesses:** Bloated, Slow, Forced Cloud Sync.
 
 ### Insomnia (The Middle Ground)
@@ -142,4 +173,4 @@ All three tools use JavaScript with Chai assertions for scripting post-request t
 ### Bruno (The Developer Tool)
 
 - **Strengths:** Speed, Offline-only, Git-Native, Privacy.
-- **Weaknesses:** Newer ecosystem, fewer "cloud" collaboration features.
+- **Weaknesses:** Newer ecosystem, no cloud collaboration features.
