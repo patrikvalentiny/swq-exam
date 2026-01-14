@@ -54,7 +54,7 @@ The comparison evaluates the tools across five key dimensions:
 
 ## Performance
 
-*Fast development and feedback loops are essential for Agile development.*
+*Fast development and test feedback loops are essential for Agile development.*
 
 - **Bruno:** Instant startup and local file storage allow rapid iteration.
 - **Insomnia:** Cloud sync introduces latency, but generally responsive.
@@ -121,7 +121,7 @@ pm.test("Response time is less than 200ms", function () {
 
 ---
 
-## CI/CD 
+## CI/CD
 
 *Continuous Integration enables automated API tests to run on every code change, ensuring early detection of issues.*
 
